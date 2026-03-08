@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tiny Fingers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="background" aria-hidden="true">
+        <div class="blob blob-one"></div>
+        <div class="blob blob-two"></div>
+        <div class="blob blob-three"></div>
+        <div id="confetti-layer" class="confetti-layer"></div>
+      </div>
+
+      <main id="stage" aria-label="Typing play stage">
+        <p id="stage-hint" class="stage-hint">Type letters, numbers, or symbols</p>
+      </main>
+
+      <button id="fullscreen-toggle" class="fullscreen-toggle" type="button" hidden>
+        Go Full Screen
+      </button>
+
+      <section id="start-overlay" class="start-overlay">
+        <div class="start-card">
+          <p class="eyebrow">Tiny Fingers</p>
+          <h1>Big keys, bright colors, happy typing.</h1>
+          <p class="intro">
+            Press any letter or number to make it dance across the screen.
+          </p>
+          <div class="actions">
+            <button id="start-fullscreen" class="action action-primary" type="button">
+              Start Full Screen
+            </button>
+            <button id="start-windowed" class="action action-secondary" type="button">
+              Start Here
+            </button>
+          </div>
+          <p class="footnote">Symbols become surprise emojis.</p>
+        </div>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

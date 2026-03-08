@@ -1,0 +1,325 @@
+:root {
+  --bg-top: #08111f;
+  --bg-bottom: #111f38;
+  --ink: #f6fbff;
+  --ink-soft: rgba(246, 251, 255, 0.78);
+  --card: rgba(8, 17, 31, 0.72);
+  --card-border: rgba(183, 229, 255, 0.18);
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+  --focus: #ffe082;
+  --sprite-lifetime: 2200ms;
+  --overlay-z: 30;
+  --control-z: 20;
+  --sprite-z: 10;
+  --font-display: "Fredoka", "Trebuchet MS", "Gill Sans", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  color: var(--ink);
+  font-family: var(--font-display);
+}
+
+button {
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 42%),
+    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+}
+
+.blob {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(10px);
+  opacity: 0.75;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.blob-one {
+  top: -12vmax;
+  left: -8vmax;
+  width: 36vmax;
+  height: 36vmax;
+  opacity: 0.82;
+  background: radial-gradient(circle, rgba(255, 98, 146, 0.68), rgba(255, 98, 146, 0));
+}
+
+.blob-two {
+  right: -12vmax;
+  top: 10vmax;
+  width: 34vmax;
+  height: 34vmax;
+  animation-duration: 21s;
+  opacity: 0.8;
+  background: radial-gradient(circle, rgba(66, 214, 255, 0.66), rgba(66, 214, 255, 0));
+}
+
+.blob-three {
+  left: 24vw;
+  bottom: -16vmax;
+  width: 42vmax;
+  height: 42vmax;
+  animation-duration: 24s;
+  opacity: 0.72;
+  background: radial-gradient(circle, rgba(255, 206, 84, 0.58), rgba(255, 206, 84, 0));
+}
+
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: calc(var(--top) * 1%);
+  left: calc(var(--left) * 1%);
+  width: calc(var(--size) * 1px);
+  height: calc(var(--size) * 1px);
+  border-radius: var(--shape-radius);
+  background: hsla(var(--hue), 92%, 72%, calc(var(--alpha) * 1%));
+  transform: translate3d(0, 0, 0) rotate(calc(var(--rotation) * 1deg));
+  animation: floaty calc(var(--duration) * 1s) ease-in-out infinite;
+  animation-delay: calc(var(--delay) * -1s);
+}
+
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.stage-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.6rem;
+  margin: 0;
+  padding: 0.8rem 1.1rem;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: rgba(8, 17, 31, 0.46);
+  color: var(--ink-soft);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px);
+  visibility: visible;
+  transition: opacity 240ms ease, transform 240ms ease, visibility 0s linear 240ms;
+}
+
+.stage-hint.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(8px);
+}
+
+.fullscreen-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: var(--control-z);
+  min-width: 9rem;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(8, 17, 31, 0.52);
+  color: var(--ink);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px);
+  cursor: pointer;
+}
+
+.start-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--overlay-z);
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background:
+    radial-gradient(circle at top, rgba(112, 206, 255, 0.12), transparent 40%),
+    rgba(5, 12, 24, 0.3);
+  backdrop-filter: blur(18px);
+  transition: opacity 240ms ease, visibility 240ms ease;
+}
+
+.start-overlay.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.start-card {
+  width: min(92vw, 34rem);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--card-border);
+  border-radius: 2rem;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.9rem;
+  color: #9de2ff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.start-card h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  line-height: 0.96;
+}
+
+.intro,
+.footnote {
+  margin: 1rem 0 0;
+  font-size: clamp(1rem, 2.6vw, 1.18rem);
+  line-height: 1.45;
+}
+
+.actions {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.6rem;
+}
+
+.action {
+  min-height: 3.8rem;
+  padding: 1rem 1.25rem;
+  border: 0;
+  border-radius: 1.4rem;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(23, 50, 77, 0.12);
+}
+
+.action-primary {
+  background: linear-gradient(135deg, #ff7aa8, #ffcb57);
+  color: #09121f;
+  font-weight: 800;
+}
+
+.action-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.sprite {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: var(--sprite-z);
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+  font-family: var(--font-display);
+  font-weight: 700;
+  will-change: transform, opacity;
+  text-shadow:
+    0 0 18px rgba(255, 255, 255, 0.18),
+    0 14px 28px rgba(0, 0, 0, 0.34);
+}
+
+.sprite--coral {
+  color: #ff8fb3;
+}
+
+.sprite--sky {
+  color: #66b5ff;
+}
+
+.sprite--sun {
+  color: #ffd15c;
+}
+
+.sprite--mint {
+  color: #63de9d;
+}
+
+.sprite--grape {
+  color: #b28cff;
+}
+
+.sprite--bubble {
+  color: #76f2ea;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(-1.4rem, -1.6rem, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.6rem, 1.8rem, 0) scale(1.08);
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(calc(var(--rotation) * 1deg));
+  }
+  50% {
+    transform: translate3d(0, -1.2rem, 0) rotate(calc((var(--rotation) + 18) * 1deg));
+  }
+}
+
+@media (max-width: 720px) {
+  .fullscreen-toggle {
+    top: auto;
+    right: 50%;
+    bottom: 0.9rem;
+    transform: translateX(50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob,
+  .confetti-piece {
+    animation-duration: 40s;
+  }
+
+  .action,
+  .start-overlay,
+  .stage-hint {
+    transition-duration: 0ms;
+  }
+}
