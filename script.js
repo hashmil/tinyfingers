@@ -26,6 +26,13 @@
     "sprite--bubble",
   ];
 
+  const TREATMENT_CLASSES = [
+    "sprite--solid",
+    "sprite--glow",
+    "sprite--shadow",
+    "sprite--outline",
+  ];
+
   const CONFIG = {
     maxSprites: 18,
     spriteLifetimeMs: 2200,
@@ -35,6 +42,7 @@
     maxFontSize: 180,
     stagePadding: 48,
     confettiCount: 26,
+    maxSpin: 32,
   };
 
   const state = {
@@ -229,18 +237,27 @@
       0,
       1,
     );
-    const scale = age < CONFIG.introDurationMs ? easeOutBack(introRatio) : 1 - exitRatio * 0.12;
+    const loopRatio = age / 1000;
+    const pulse = 1 + Math.sin(loopRatio * sprite.pulseSpeed) * sprite.pulseAmount * (1 - exitRatio * 0.55);
+    const bobX = Math.sin(loopRatio * sprite.wobbleSpeed + sprite.phase) * sprite.wobbleX;
+    const bobY = Math.cos(loopRatio * sprite.floatSpeed + sprite.phase) * sprite.wobbleY;
+    const scale =
+      (age < CONFIG.introDurationMs ? easeOutBack(introRatio) : 1 - exitRatio * 0.12) * pulse;
     const opacity = 1 - Math.pow(exitRatio, prefersReducedMotion() ? 1.3 : 1.8);
-    const xOffset = sprite.driftX * exitRatio;
-    const yOffset = sprite.driftY * exitRatio;
-    const rotate = sprite.rotation + sprite.spin * exitRatio;
+    const xOffset = bobX + sprite.driftX * exitRatio;
+    const yOffset = bobY + sprite.driftY * exitRatio;
+    const rotate =
+      sprite.rotation +
+      sprite.spin * exitRatio +
+      Math.sin(loopRatio * sprite.wobbleSpeed + sprite.phase) * sprite.wobbleRotate;
 
     sprite.element.style.left = `${sprite.x}px`;
     sprite.element.style.top = `${sprite.y}px`;
     sprite.element.style.opacity = opacity.toFixed(3);
     sprite.element.style.transform =
       `translate(-50%, -50%) translate(${xOffset.toFixed(2)}px, ${yOffset.toFixed(2)}px) ` +
-      `rotate(${rotate.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      `rotate(${rotate.toFixed(2)}deg) skew(${sprite.skewX.toFixed(2)}deg, ${sprite.skewY.toFixed(2)}deg) ` +
+      `scale(${scale.toFixed(3)})`;
   }
 
   function stepSprites() {
@@ -296,6 +313,7 @@
   function spawnSprite(content, kind) {
     const fontSize = randomBetween(CONFIG.minFontSize, CONFIG.maxFontSize);
     const position = getRandomPosition(fontSize);
+    const reduceMotion = prefersReducedMotion();
     const sprite = {
       id: state.nextId,
       content,
@@ -304,18 +322,33 @@
       y: position.y,
       size: fontSize,
       rotation: randomBetween(-14, 14),
-      spin: randomBetween(-24, 24),
-      driftX: prefersReducedMotion() ? randomBetween(-8, 8) : randomBetween(-28, 28),
-      driftY: prefersReducedMotion() ? randomBetween(-18, -4) : randomBetween(-70, -18),
+      spin: randomBetween(-CONFIG.maxSpin, CONFIG.maxSpin),
+      driftX: reduceMotion ? randomBetween(-8, 8) : randomBetween(-44, 44),
+      driftY: reduceMotion ? randomBetween(-18, -4) : randomBetween(-92, -22),
+      wobbleX: reduceMotion ? randomBetween(1, 4) : randomBetween(4, 14),
+      wobbleY: reduceMotion ? randomBetween(1, 6) : randomBetween(8, 20),
+      wobbleRotate: reduceMotion ? randomBetween(0.4, 1.4) : randomBetween(1.2, 4.5),
+      wobbleSpeed: randomBetween(2.2, 4.8),
+      floatSpeed: randomBetween(1.4, 3.1),
+      pulseSpeed: randomBetween(2.6, 5.2),
+      pulseAmount: reduceMotion ? randomBetween(0.006, 0.012) : randomBetween(0.015, 0.045),
+      skewX: randomBetween(-4, 4),
+      skewY: randomBetween(-2, 2),
+      phase: randomBetween(0, Math.PI * 2),
+      weight: Math.random() > 0.55 ? "700" : "600",
+      letterSpacing: kind === "literal" && content.length === 1 ? `${randomBetween(-0.06, 0.04).toFixed(3)}em` : "0",
       colorClass: pickRandom(COLOR_CLASSES),
+      treatmentClass: pickRandom(TREATMENT_CLASSES),
       createdAt: state.clockMs,
       lifetimeMs: CONFIG.spriteLifetimeMs,
       element: document.createElement("span"),
     };
 
-    sprite.element.className = `sprite ${sprite.colorClass}`;
+    sprite.element.className = `sprite ${sprite.colorClass} ${sprite.treatmentClass}`;
     sprite.element.textContent = sprite.content;
     sprite.element.style.fontSize = `${sprite.size}px`;
+    sprite.element.style.fontWeight = sprite.weight;
+    sprite.element.style.letterSpacing = sprite.letterSpacing;
     sprite.element.setAttribute("role", "presentation");
 
     stage.appendChild(sprite.element);
@@ -401,6 +434,7 @@
         size: Number(sprite.size.toFixed(1)),
         rotation: Number(sprite.rotation.toFixed(1)),
         colorClass: sprite.colorClass,
+        treatmentClass: sprite.treatmentClass,
         remainingMs: Math.max(0, Math.round(sprite.lifetimeMs - (state.clockMs - sprite.createdAt))),
       })),
     });
