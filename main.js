@@ -7,6 +7,7 @@ import { preloadTextures } from "./textures.js";
 import { createBackground } from "./background.js";
 import { createParticleSystem } from "./particles.js";
 import { createSpriteSystem, classifyKey, loadFont } from "./sprites.js";
+import { createMouseTrail } from "./mouse-trail.js";
 
 // ── State ──────────────────────────────────────────────────────────────
 
@@ -83,6 +84,7 @@ scene.add(fillLight);
 const background = createBackground(scene);
 const particles = createParticleSystem(scene);
 const sprites = createSpriteSystem(scene, camera);
+const trail = createMouseTrail(scene, camera);
 
 // Load font for 3D text + pre-render emoji textures
 loadFont();
@@ -221,6 +223,7 @@ function animationFrame(now) {
   background.update(timeSeconds);
   particles.update(timeSeconds, reduced);
   sprites.updateSprites(state.clockMs);
+  trail.update(timeSeconds);
 
   composer.render();
 }
@@ -250,6 +253,7 @@ function advanceTime(ms) {
   background.update(timeSeconds);
   particles.update(timeSeconds, reduced);
   sprites.updateSprites(state.clockMs);
+  trail.update(timeSeconds);
   composer.render();
   state.lastFrameTime = performance.now();
 }
@@ -266,6 +270,19 @@ window.addEventListener("keydown", handleKeyDown);
 window.addEventListener("fullscreenchange", syncFullscreenState);
 window.addEventListener("webkitfullscreenchange", syncFullscreenState);
 window.addEventListener("resize", onResize);
+
+// ── Mouse / touch trail ───────────────────────────────────────────────
+
+canvas.addEventListener("mousemove", (e) => {
+  if (!state.started) return;
+  trail.handleMove(e.clientX, e.clientY, state.clockMs, prefersReducedMotion());
+});
+
+canvas.addEventListener("touchmove", (e) => {
+  if (!state.started) return;
+  const t = e.touches[0];
+  if (t) trail.handleMove(t.clientX, t.clientY, state.clockMs, prefersReducedMotion());
+}, { passive: true });
 
 // ── Boot ───────────────────────────────────────────────────────────────
 
