@@ -32,8 +32,8 @@ const stageHint = document.getElementById("stage-hint");
 
 // ── iOS detection (no Fullscreen API support) ─────────────────────────
 
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+// Only target iPhone/iPod — iPad and Android support the Fullscreen API
+const isIOS = /iPhone|iPod/.test(navigator.userAgent);
 
 if (isIOS) {
   if (startFullscreenBtn) startFullscreenBtn.hidden = true;
