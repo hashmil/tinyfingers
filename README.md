@@ -16,6 +16,8 @@ Built with [Three.js](https://threejs.org/) for real-time WebGL rendering. No bu
 
 > Inspired by the original [tinyfingers.net](https://tinyfingers.net/) — a lovely typing toy I wanted to give a visual glow-up.
 
+> The 3D sibling of [Tiny Typer](https://tinytyper.pages.dev/) ([GitHub](https://github.com/hashmil/tinytyper)) — same idea, more sparkle.
+
 ## How it works
 
 1. Open the app and tap **Start Full Screen** or **Start Here**
