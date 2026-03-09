@@ -183,6 +183,19 @@ button:focus-visible {
   animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
 }
 
+.github-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--ink-soft);
+  opacity: 0.45;
+  transition: opacity 200ms ease;
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both;
+}
+
+.github-link:hover {
+  opacity: 0.9;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -247,7 +260,8 @@ button:focus-visible {
   .start-card h1,
   .intro,
   .actions,
-  .footnote {
+  .footnote,
+  .github-link {
     animation: none;
   }
 }
