@@ -10,7 +10,7 @@ A typing toy for toddlers — press any key and watch colorful 3D letters tumble
 
 Built with [Three.js](https://threejs.org/) for real-time WebGL rendering. No build tools, no npm — just static files served from a folder. Hosted on [Cloudflare Pages](https://pages.cloudflare.com/).
 
-> Inspired by the original [tinyfingers.net](https://tinyfingers.net/) — a lovely typing toy we wanted to give a visual glow-up.
+> Inspired by the original [tinyfingers.net](https://tinyfingers.net/) — a lovely typing toy I wanted to give a visual glow-up.
 
 ## How it works
 
