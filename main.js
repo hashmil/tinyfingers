@@ -196,6 +196,13 @@ function handleKeyDown(event) {
     return;
   }
 
+  // Spacebar: pop all existing sprites in a staggered burst
+  if (event.key === " ") {
+    sprites.popAll();
+    hideStageHint();
+    return;
+  }
+
   const keyInfo = classifyKey(event.key);
   if (!keyInfo) return;
 

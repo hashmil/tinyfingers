@@ -271,6 +271,47 @@ export function createSpriteSystem(scene, camera) {
 
     for (const s of activeSprites) {
       const age = clockMs - s.createdAt;
+
+      // ── Pop/burst animation ────────────────────────────────────────
+      if (s.popping) {
+        const popAge = clockMs - s.popStartMs;
+        if (popAge < 0) {
+          // Waiting for stagger delay — render normally below
+        } else if (popAge >= s.popDurationMs) {
+          expired.push(s);
+          continue;
+        } else {
+          const p = popAge / s.popDurationMs;
+          // Quick scale-up in first 25%, then shrink to 0
+          const popScale = p < 0.25
+            ? s.size * (1 + easeOutBack(p / 0.25) * 0.6)
+            : s.size * 1.6 * (1 - Math.pow((p - 0.25) / 0.75, 1.5));
+
+          if (s.is3D) {
+            s.object3d.scale.setScalar(Math.max(0, popScale));
+          } else {
+            s.object3d.scale.set(Math.max(0, popScale), Math.max(0, popScale), 1);
+          }
+
+          // Burst outward + spin
+          s.object3d.position.set(
+            s.object3d.position.x + s.burstX * 0.06,
+            s.object3d.position.y + s.burstY * 0.06,
+            s.object3d.position.z
+          );
+          if (s.is3D) {
+            s.object3d.rotation.z += s.burstSpin * 0.02;
+          } else {
+            s.material.rotation += s.burstSpin * 0.02;
+          }
+
+          // Fade out
+          s.material.opacity = 1 - Math.pow(p, 0.8);
+          continue;
+        }
+      }
+
+      // ── Normal lifecycle ───────────────────────────────────────────
       if (age >= s.lifetimeMs) {
         expired.push(s);
         continue;
@@ -352,9 +393,33 @@ export function createSpriteSystem(scene, camera) {
     }));
   }
 
+  // ── Spacebar pop/burst effect ──────────────────────────────────────
+  // Each sprite gets a staggered "pop" — quick scale up then rapid shrink + fade
+
+  function popAll() {
+    const count = activeSprites.length;
+    if (count === 0) return;
+
+    // Stagger: 40ms between each sprite, random order
+    const shuffled = [...activeSprites].sort(() => Math.random() - 0.5);
+    const staggerMs = 40;
+
+    shuffled.forEach((s, i) => {
+      const delay = i * staggerMs;
+      s.popStartMs = clockMs + delay;
+      s.popDurationMs = 320;
+      s.popping = true;
+      // Give each a random burst direction
+      s.burstX = (Math.random() - 0.5) * 3;
+      s.burstY = (Math.random() - 0.5) * 3;
+      s.burstSpin = (Math.random() - 0.5) * 12;
+    });
+  }
+
   return {
     spawnSprite,
     updateSprites,
+    popAll,
     getState,
     get count() { return activeSprites.length; },
     get clockMs() { return clockMs; },
