@@ -94,9 +94,8 @@ function syncFullscreenState() {
   state.isFullscreen = Boolean(
     document.fullscreenElement || document.webkitFullscreenElement
   );
-  fullscreenToggle.textContent = state.isFullscreen
-    ? "Exit Full Screen"
-    : "Go Full Screen";
+  fullscreenToggle.textContent = state.isFullscreen ? "\u00d7" : "Go Full Screen";
+  fullscreenToggle.classList.toggle("is-close", state.isFullscreen);
 }
 
 async function enterFullscreen() {

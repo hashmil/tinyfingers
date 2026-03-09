@@ -92,6 +92,22 @@ button:focus-visible {
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(16px);
   cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.fullscreen-toggle.is-close {
+  min-width: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font-size: 1.2rem;
+  line-height: 2.2rem;
+  text-align: center;
+  opacity: 0.5;
+}
+
+.fullscreen-toggle.is-close:hover {
+  opacity: 0.85;
 }
 
 .start-overlay {
