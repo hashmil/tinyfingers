@@ -8,6 +8,7 @@ import { createBackground } from "./background.js";
 import { createParticleSystem } from "./particles.js";
 import { createSpriteSystem, classifyKey, loadFont } from "./sprites.js";
 import { createMouseTrail } from "./mouse-trail.js";
+import { createBurstSystem } from "./burst.js";
 
 // ── State ──────────────────────────────────────────────────────────────
 
@@ -85,6 +86,7 @@ const background = createBackground(scene);
 const particles = createParticleSystem(scene);
 const sprites = createSpriteSystem(scene, camera);
 const trail = createMouseTrail(scene, camera);
+const bursts = createBurstSystem(scene);
 
 // Load font for 3D text + pre-render emoji textures
 loadFont();
@@ -196,9 +198,11 @@ function handleKeyDown(event) {
     return;
   }
 
-  // Spacebar: pop all existing sprites in a staggered burst
+  // Spacebar: pop all existing sprites in a staggered burst with fireworks
   if (event.key === " ") {
-    sprites.popAll();
+    sprites.popAll((x, y, z, color) => {
+      bursts.burst(x, y, z, color);
+    });
     hideStageHint();
     return;
   }
@@ -231,6 +235,7 @@ function animationFrame(now) {
   particles.update(timeSeconds, reduced);
   sprites.updateSprites(state.clockMs);
   trail.update(timeSeconds);
+  bursts.update(timeSeconds);
 
   composer.render();
 }
@@ -261,6 +266,7 @@ function advanceTime(ms) {
   particles.update(timeSeconds, reduced);
   sprites.updateSprites(state.clockMs);
   trail.update(timeSeconds);
+  bursts.update(timeSeconds);
   composer.render();
   state.lastFrameTime = performance.now();
 }

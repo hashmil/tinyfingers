@@ -275,12 +275,23 @@ export function createSpriteSystem(scene, camera) {
       // ── Pop/burst animation ────────────────────────────────────────
       if (s.popping) {
         const popAge = clockMs - s.popStartMs;
-        if (popAge < 0) {
-          // Waiting for stagger delay — render normally below
-        } else if (popAge >= s.popDurationMs) {
-          expired.push(s);
-          continue;
-        } else {
+
+        // Still waiting for stagger delay — fall through to normal render
+        if (popAge >= 0) {
+          // Fire burst particles once at the moment the pop starts
+          if (!s.popBurstFired) {
+            s.popBurstFired = true;
+            if (s.onBurst) {
+              const pos = s.object3d.position;
+              s.onBurst(pos.x, pos.y, pos.z, s.material.color);
+            }
+          }
+
+          if (popAge >= s.popDurationMs) {
+            expired.push(s);
+            continue;
+          }
+
           const p = popAge / s.popDurationMs;
           // Quick scale-up in first 25%, then shrink to 0
           const popScale = p < 0.25
@@ -396,7 +407,7 @@ export function createSpriteSystem(scene, camera) {
   // ── Spacebar pop/burst effect ──────────────────────────────────────
   // Each sprite gets a staggered "pop" — quick scale up then rapid shrink + fade
 
-  function popAll() {
+  function popAll(onBurst) {
     const count = activeSprites.length;
     if (count === 0) return;
 
@@ -409,6 +420,8 @@ export function createSpriteSystem(scene, camera) {
       s.popStartMs = clockMs + delay;
       s.popDurationMs = 320;
       s.popping = true;
+      s.popBurstFired = false;
+      s.onBurst = onBurst || null;
       // Give each a random burst direction
       s.burstX = (Math.random() - 0.5) * 3;
       s.burstY = (Math.random() - 0.5) * 3;
