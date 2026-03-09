@@ -8,7 +8,9 @@
 
 A typing toy for toddlers — press any key and watch colorful 3D letters tumble across a sparkling, animated world.
 
-https://github.com/hashmil/tinyfingers/raw/main/demo.mp4
+<div align="center">
+  <img src="demo.gif" alt="Tiny Fingers demo" width="600">
+</div>
 
 Built with [Three.js](https://threejs.org/) for real-time WebGL rendering. No build tools, no npm — just static files served from a folder. Hosted on [Cloudflare Pages](https://pages.cloudflare.com/).
 
