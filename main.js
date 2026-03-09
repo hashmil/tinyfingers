@@ -30,6 +30,20 @@ const startWindowedBtn = document.getElementById("start-windowed");
 const fullscreenToggle = document.getElementById("fullscreen-toggle");
 const stageHint = document.getElementById("stage-hint");
 
+// ── iOS detection (no Fullscreen API support) ─────────────────────────
+
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+if (isIOS) {
+  if (startFullscreenBtn) startFullscreenBtn.hidden = true;
+  if (startWindowedBtn) {
+    startWindowedBtn.classList.remove("action-secondary");
+    startWindowedBtn.classList.add("action-primary");
+    startWindowedBtn.textContent = "Start";
+  }
+}
+
 // ── Three.js setup ─────────────────────────────────────────────────────
 
 const renderer = new THREE.WebGLRenderer({
@@ -161,9 +175,11 @@ function startApp(preferFullscreen) {
   if (state.started) return;
   state.started = true;
   startOverlay.classList.add("is-hidden");
-  fullscreenToggle.hidden = false;
-  syncFullscreenState();
-  if (preferFullscreen) enterFullscreen();
+  if (!isIOS) {
+    fullscreenToggle.hidden = false;
+    syncFullscreenState();
+    if (preferFullscreen) enterFullscreen();
+  }
 }
 
 function hideStageHint() {
