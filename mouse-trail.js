@@ -1,17 +1,21 @@
 import * as THREE from "three";
 
-const POOL_SIZE = 120;
-const LIFETIME = 0.8; // seconds
-const SPAWN_INTERVAL = 14; // ms
+const POOL_SIZE = 150;
+const LIFETIME = 1.2; // seconds
+const SPAWN_INTERVAL = 10; // ms
 
-// Rainbow cycle colors
+// Vivid rainbow colors — punchy and saturated
 const TRAIL_COLORS = [
-  new THREE.Color(0xffb0cc), // coral
-  new THREE.Color(0x88ccff), // sky
-  new THREE.Color(0xffe080), // sun
-  new THREE.Color(0x80f0b0), // mint
-  new THREE.Color(0xc8a8ff), // grape
-  new THREE.Color(0x90fff6), // bubble
+  new THREE.Color(0xff3377), // hot pink
+  new THREE.Color(0xff6622), // orange
+  new THREE.Color(0xffdd00), // yellow
+  new THREE.Color(0x33ff66), // green
+  new THREE.Color(0x22ccff), // cyan
+  new THREE.Color(0x6644ff), // purple
+  new THREE.Color(0xff44cc), // magenta
+  new THREE.Color(0x44ffaa), // aqua
+  new THREE.Color(0xff8844), // tangerine
+  new THREE.Color(0xaabb00), // lime
 ];
 const WHITE = new THREE.Color(0xffffff);
 
@@ -56,11 +60,11 @@ function createDiamondGeometry(size) {
 }
 
 const SHAPE_CONFIGS = [
-  { create: () => createCircleGeometry(0.05), weight: 0.30 },
-  { create: () => new THREE.PlaneGeometry(0.08, 0.08), weight: 0.25 },
-  { create: () => createStarGeometry(0.06, 0.025, 4), weight: 0.15 },
-  { create: () => createDiamondGeometry(0.08), weight: 0.15 },
-  { create: () => createTriangleGeometry(0.09), weight: 0.15 },
+  { create: () => createCircleGeometry(0.25), weight: 0.25 },
+  { create: () => new THREE.PlaneGeometry(0.4, 0.4), weight: 0.20 },
+  { create: () => createStarGeometry(0.35, 0.14, 5), weight: 0.20 },
+  { create: () => createDiamondGeometry(0.35), weight: 0.15 },
+  { create: () => createTriangleGeometry(0.4), weight: 0.20 },
 ];
 
 // ── Trail system ──────────────────────────────────────────────────────
@@ -68,7 +72,7 @@ const SHAPE_CONFIGS = [
 export function createMouseTrail(scene, camera) {
   const material = new THREE.MeshBasicMaterial({
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.85,
     side: THREE.DoubleSide,
     depthWrite: false,
   });
@@ -152,22 +156,22 @@ export function createMouseTrail(scene, camera) {
 
   function spawn(screenX, screenY, timeSeconds, reducedMotion) {
     const pos = screenToWorld(screenX, screenY);
-    const scatter = reducedMotion ? 0.05 : 0.15;
+    const scatter = reducedMotion ? 0.1 : 0.5;
 
     const p = pool[nextIdx];
     p.alive = true;
     p.birthTime = timeSeconds;
     p.x = pos.x + (Math.random() - 0.5) * scatter * 2;
     p.y = pos.y + (Math.random() - 0.5) * scatter * 2;
-    p.z = 0;
-    p.scale = 0.4 + Math.random() * 0.4;
-    p.driftX = (Math.random() - 0.5) * 0.6;
-    p.driftY = 0.2 + Math.random() * 0.4;
-    p.rotSpeed = (Math.random() - 0.5) * 3;
+    p.z = (Math.random() - 0.5) * 0.5;
+    p.scale = 0.8 + Math.random() * 1.2;
+    p.driftX = (Math.random() - 0.5) * 1.5;
+    p.driftY = (Math.random() - 0.5) * 1.5;
+    p.rotSpeed = (Math.random() - 0.5) * 5;
     p.rot = Math.random() * Math.PI * 2;
 
     // Color: rainbow cycle with occasional white sparkle
-    const color = Math.random() < 0.1
+    const color = Math.random() < 0.05
       ? WHITE
       : TRAIL_COLORS[colorIdx % TRAIL_COLORS.length];
     groups[p.groupIdx].mesh.setColorAt(p.localIdx, color);
@@ -206,8 +210,10 @@ export function createMouseTrail(scene, camera) {
         }
 
         const progress = age / LIFETIME;
-        // Ease-out shrink: fast at start, slow at end → 1 - progress^0.5
-        const scaleFactor = 1 - Math.pow(progress, 0.5);
+        // Pop in quickly, then fade out smoothly
+        const popIn = Math.min(age / 0.08, 1); // fast 80ms pop
+        const fadeOut = 1 - Math.pow(progress, 0.4);
+        const scaleFactor = popIn * fadeOut;
 
         dummy.position.set(
           p.x + p.driftX * age,
