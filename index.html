@@ -10,25 +10,20 @@
       href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="app">
-      <div class="background" aria-hidden="true">
-        <div class="fluid-layer">
-          <div class="fluid-ribbon fluid-ribbon-one"></div>
-          <div class="fluid-ribbon fluid-ribbon-two"></div>
-          <div class="fluid-ribbon fluid-ribbon-three"></div>
-        </div>
-        <div class="blob blob-one"></div>
-        <div class="blob blob-two"></div>
-        <div class="blob blob-three"></div>
-        <div id="confetti-layer" class="confetti-layer"></div>
-      </div>
-
-      <main id="stage" aria-label="Typing play stage">
-        <p id="stage-hint" class="stage-hint">Type letters, numbers, or symbols</p>
-      </main>
+      <canvas id="canvas"></canvas>
 
       <button id="fullscreen-toggle" class="fullscreen-toggle" type="button" hidden>
         Go Full Screen
@@ -52,8 +47,10 @@
           <p class="footnote">Symbols become surprise emojis.</p>
         </div>
       </section>
+
+      <p id="stage-hint" class="stage-hint">Type letters, numbers, or symbols</p>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>
