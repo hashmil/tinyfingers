@@ -138,6 +138,18 @@ button:focus-visible {
   background: var(--card);
   box-shadow: var(--shadow);
   text-align: center;
+  animation: card-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .eyebrow {
@@ -147,25 +159,46 @@ button:focus-visible {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
 }
 
 .start-card h1 {
   margin: 0;
   font-size: clamp(2.2rem, 6vw, 4rem);
   line-height: 0.96;
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 
-.intro,
+.intro {
+  margin: 1rem 0 0;
+  font-size: clamp(1rem, 2.6vw, 1.18rem);
+  line-height: 1.45;
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+}
+
 .footnote {
   margin: 1rem 0 0;
   font-size: clamp(1rem, 2.6vw, 1.18rem);
   line-height: 1.45;
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .actions {
   display: grid;
   gap: 0.85rem;
   margin-top: 1.6rem;
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
 }
 
 .action {
@@ -208,5 +241,13 @@ button:focus-visible {
   .start-overlay,
   .stage-hint {
     transition-duration: 0ms;
+  }
+  .start-card,
+  .eyebrow,
+  .start-card h1,
+  .intro,
+  .actions,
+  .footnote {
+    animation: none;
   }
 }
