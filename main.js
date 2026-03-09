@@ -184,26 +184,17 @@ function handleKeyDown(event) {
   event.preventDefault();
   event.stopPropagation();
 
-  // Ignore modifier-only keys, arrows, F-keys, etc. — but don't let them through
+  // Ignore modifier-only keys — but don't let them through to the browser
   if (
     event.key === "Shift" ||
     event.key === "Control" ||
     event.key === "Alt" ||
     event.key === "Meta" ||
     event.key === "CapsLock" ||
-    event.key === "Tab" ||
-    event.key === "ArrowUp" ||
-    event.key === "ArrowDown" ||
-    event.key === "ArrowLeft" ||
-    event.key === "ArrowRight" ||
-    event.key === "Dead" ||
-    event.key.startsWith("F") && event.key.length <= 3
+    event.key === "Dead"
   ) {
     return;
   }
-
-  // Ignore Ctrl/Cmd/Alt combos — already prevented above
-  if (event.ctrlKey || event.metaKey || event.altKey) return;
 
   const keyInfo = classifyKey(event.key);
   if (!keyInfo) return;

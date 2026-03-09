@@ -100,9 +100,6 @@ function clamp(value, min, max) {
 }
 
 export function classifyKey(key) {
-  if (key === " ") {
-    return { content: pickRandom(EMOJI_POOL), kind: "emoji" };
-  }
   if (/^[a-z]$/i.test(key)) {
     // Randomly uppercase or lowercase
     const char = Math.random() < 0.5 ? key.toUpperCase() : key.toLowerCase();
@@ -111,10 +108,8 @@ export function classifyKey(key) {
   if (/^[0-9]$/.test(key)) {
     return { content: key, kind: "literal" };
   }
-  if (key.length === 1) {
-    return { content: pickRandom(EMOJI_POOL), kind: "emoji" };
-  }
-  return null;
+  // Everything else (space, symbols, F-keys, arrows, Tab, Enter, etc.) → emoji
+  return { content: pickRandom(EMOJI_POOL), kind: "emoji" };
 }
 
 export function createSpriteSystem(scene, camera) {
