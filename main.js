@@ -320,9 +320,73 @@ canvas.addEventListener("mousemove", (e) => {
 
 canvas.addEventListener("touchmove", (e) => {
   if (!state.started) return;
-  const t = e.touches[0];
-  if (t) trail.handleMove(t.clientX, t.clientY, state.clockMs, prefersReducedMotion());
-}, { passive: true });
+  e.preventDefault(); // prevent scrolling/zooming
+  for (let i = 0; i < e.touches.length; i++) {
+    const t = e.touches[i];
+    trail.handleMove(t.clientX, t.clientY, state.clockMs, prefersReducedMotion());
+  }
+}, { passive: false });
+
+// ── Touch to spawn (mobile/tablet) ───────────────────────────────────
+
+const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+const DIGITS = "0123456789";
+const ALL_CHARS = ALPHABET + DIGITS;
+let lastTapTime = 0;
+
+function spawnRandomAtTouch(touch) {
+  // 70% letters/digits, 30% emoji
+  if (Math.random() < 0.7) {
+    const char = ALL_CHARS[Math.floor(Math.random() * ALL_CHARS.length)];
+    const keyInfo = classifyKey(char);
+    if (keyInfo) sprites.spawnSprite(keyInfo.content, keyInfo.kind);
+  } else {
+    const keyInfo = classifyKey("!"); // triggers emoji via classifyKey
+    if (keyInfo) sprites.spawnSprite(keyInfo.content, keyInfo.kind);
+  }
+  hideStageHint();
+}
+
+canvas.addEventListener("touchstart", (e) => {
+  if (!state.started) return;
+  e.preventDefault();
+
+  const now = performance.now();
+
+  // Double-tap detection (under 350ms) → pop all
+  if (now - lastTapTime < 350 && e.touches.length === 1) {
+    sprites.popAll((x, y, z, color) => {
+      bursts.burst(x, y, z, color);
+    });
+    lastTapTime = 0;
+    return;
+  }
+  lastTapTime = now;
+
+  // Multi-touch: 3+ fingers also triggers pop
+  if (e.touches.length >= 3) {
+    sprites.popAll((x, y, z, color) => {
+      bursts.burst(x, y, z, color);
+    });
+    return;
+  }
+
+  // Spawn a character for each touch point
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    spawnRandomAtTouch(e.changedTouches[i]);
+  }
+}, { passive: false });
+
+// Also spawn on mouse click (for desktop testing)
+canvas.addEventListener("click", (e) => {
+  if (!state.started) return;
+  // Only spawn on click if no keyboard is likely present (touch device)
+  // or as a fallback — spawns a random character
+  if ("ontouchstart" in window) {
+    // Touch devices handle this via touchstart
+    return;
+  }
+});
 
 // ── Boot ───────────────────────────────────────────────────────────────
 
