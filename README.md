@@ -1,12 +1,16 @@
 # Tiny Fingers
 
+[![Live Site](https://img.shields.io/badge/Live%20Site-tinyfingers.pages.dev-ff7aa8?style=for-the-badge)](https://tinyfingers.pages.dev/)
+[![Cloudflare Pages](https://img.shields.io/badge/Hosted%20on-Cloudflare%20Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
+[![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![No Build](https://img.shields.io/badge/Build%20Step-None-brightgreen?style=for-the-badge)]()
+
 A typing toy for toddlers — press any key and watch colorful 3D letters tumble across a sparkling, animated world.
 
-Built with [Three.js](https://threejs.org/) for real-time WebGL rendering. No build tools, no npm — just static files served from a folder.
+Built with [Three.js](https://threejs.org/) for real-time WebGL rendering. No build tools, no npm — just static files served from a folder. Hosted on [Cloudflare Pages](https://pages.cloudflare.com/).
 
-Inspired by the original [tinyfingers.net](https://tinyfingers.net/).
-
-**Try it live:** [tinyfingers.pages.dev](https://tinyfingers.pages.dev/)
+> Inspired by the original [tinyfingers.net](https://tinyfingers.net/) — a lovely typing toy we wanted to give a visual glow-up.
 
 ## How it works
 
