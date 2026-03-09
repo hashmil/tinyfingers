@@ -177,8 +177,15 @@ function hideStageHint() {
 function handleKeyDown(event) {
   if (!state.started) return;
 
+  // Let Escape through so browser can exit fullscreen
+  if (event.key === "Escape") return;
+
+  // Block ALL default browser shortcuts when app is running (toddler-proof)
+  event.preventDefault();
+  event.stopPropagation();
+
+  // Ignore modifier-only keys, arrows, F-keys, etc. — but don't let them through
   if (
-    event.key === "Escape" ||
     event.key === "Shift" ||
     event.key === "Control" ||
     event.key === "Alt" ||
@@ -189,11 +196,13 @@ function handleKeyDown(event) {
     event.key === "ArrowDown" ||
     event.key === "ArrowLeft" ||
     event.key === "ArrowRight" ||
-    event.key === "Dead"
+    event.key === "Dead" ||
+    event.key.startsWith("F") && event.key.length <= 3
   ) {
     return;
   }
 
+  // Ignore Ctrl/Cmd/Alt combos — already prevented above
   if (event.ctrlKey || event.metaKey || event.altKey) return;
 
   const keyInfo = classifyKey(event.key);
@@ -270,6 +279,33 @@ window.addEventListener("keydown", handleKeyDown);
 window.addEventListener("fullscreenchange", syncFullscreenState);
 window.addEventListener("webkitfullscreenchange", syncFullscreenState);
 window.addEventListener("resize", onResize);
+
+// ── Toddler-proofing ─────────────────────────────────────────────────
+// Block context menu, drag/drop, and accidental navigation when app is running
+
+window.addEventListener("contextmenu", (e) => {
+  if (state.started) e.preventDefault();
+});
+
+window.addEventListener("dragstart", (e) => {
+  if (state.started) e.preventDefault();
+});
+
+window.addEventListener("drop", (e) => {
+  if (state.started) e.preventDefault();
+});
+
+// Catch keyup too to prevent stray browser behavior
+window.addEventListener("keyup", (e) => {
+  if (state.started && e.key !== "Escape") e.preventDefault();
+});
+
+// Warn before accidental tab close (browsers may show a confirmation dialog)
+window.addEventListener("beforeunload", (e) => {
+  if (state.started && state.isFullscreen) {
+    e.preventDefault();
+  }
+});
 
 // ── Mouse / touch trail ───────────────────────────────────────────────
 
