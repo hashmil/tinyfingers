@@ -406,5 +406,9 @@ canvas.addEventListener("click", (e) => {
 
 // ── Boot ───────────────────────────────────────────────────────────────
 
+// Hide loader and reveal action buttons now that JS is loaded and handlers are attached
+document.getElementById("loader")?.classList.add("is-hidden");
+document.querySelector(".actions")?.removeAttribute("hidden");
+
 syncFullscreenState();
 requestAnimationFrame(animationFrame);

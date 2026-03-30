@@ -210,6 +210,42 @@ button:focus-visible {
   }
 }
 
+.loader {
+  width: 40px;
+  aspect-ratio: 1;
+  display: grid;
+  margin: 1.6rem auto 0;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  grid-area: 1/1;
+  --c: no-repeat radial-gradient(farthest-side, #ff7aa8 92%, #0000);
+  background:
+    var(--c) 50% 0,
+    var(--c) 50% 100%,
+    var(--c) 100% 50%,
+    var(--c) 0 50%;
+  background-size: 10px 10px;
+  animation: loader-spin 1s infinite;
+}
+
+.loader::before {
+  margin: 4px;
+  filter: hue-rotate(45deg);
+  background-size: 7px 7px;
+  animation-timing-function: linear;
+}
+
+@keyframes loader-spin {
+  100% { transform: rotate(0.5turn); }
+}
+
+.loader.is-hidden {
+  display: none;
+}
+
 .actions {
   display: grid;
   gap: 0.85rem;
@@ -265,7 +301,9 @@ button:focus-visible {
   .intro,
   .actions,
   .footnote,
-  .github-link {
+  .github-link,
+  .loader::before,
+  .loader::after {
     animation: none;
   }
 }
